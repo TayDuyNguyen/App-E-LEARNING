@@ -4,7 +4,8 @@ import {
   Settings, Shield, BadgeCheck, LogOut, 
   ChevronRight, Award, Flame, Zap, Trophy, 
   Edit3, BookOpen, Clock, Heart, HelpCircle, 
-  FileCheck, Star, Activity, Sparkles
+  FileCheck, Star, Activity, Sparkles, Bookmark,
+  DownloadCloud, CreditCard
 } from 'lucide-react';
 
 interface ProfileProps {
@@ -16,11 +17,19 @@ interface ProfileProps {
   };
   onLogout: () => void;
   onEditClick: () => void;
+  onSettingsClick: () => void;
+  onCertificatesClick: () => void;
+  onBookmarksClick: () => void;
+  onOfflineClick: () => void;
+  onSubscriptionClick: () => void;
+  onHelpClick: () => void;
 }
 
 type ProfileTab = 'courses' | 'achievements' | 'activity' | 'settings';
 
-const ProfileScreen: React.FC<ProfileProps> = ({ user, onLogout, onEditClick }) => {
+const ProfileScreen: React.FC<ProfileProps> = ({ 
+  user, onLogout, onEditClick, onSettingsClick, onCertificatesClick, onBookmarksClick, onOfflineClick, onSubscriptionClick, onHelpClick
+}) => {
   const [activeTab, setActiveTab] = useState<ProfileTab>('courses');
 
   return (
@@ -147,9 +156,13 @@ const ProfileScreen: React.FC<ProfileProps> = ({ user, onLogout, onEditClick }) 
 
         {activeTab === 'settings' && (
           <div className="bg-[#1E293B] rounded-[40px] border border-white/5 overflow-hidden shadow-xl animate-in fade-in duration-500">
-            <MenuButton icon={<Shield className="text-emerald-400" />} label="Bảo mật tài khoản" />
-            <MenuButton icon={<FileCheck className="text-blue-400" />} label="Chứng chỉ của tôi" />
-            <MenuButton icon={<HelpCircle className="text-amber-400" />} label="Trung tâm hỗ trợ" />
+            <MenuButton icon={<Shield className="text-emerald-400" />} label="Bảo mật & Quyền riêng tư" />
+            <MenuButton icon={<Bookmark className="text-amber-400" />} label="Nội dung đã lưu" onClick={onBookmarksClick} />
+            <MenuButton icon={<DownloadCloud className="text-blue-400" />} label="Tải xuống & Ngoại tuyến" onClick={onOfflineClick} />
+            <MenuButton icon={<CreditCard className="text-indigo-400" />} label="Gói đăng ký hội viên" onClick={onSubscriptionClick} />
+            <MenuButton icon={<FileCheck className="text-emerald-400" />} label="Chứng chỉ của tôi" onClick={onCertificatesClick} />
+            <MenuButton icon={<Settings className="text-slate-400" />} label="Cài đặt hệ thống" onClick={onSettingsClick} />
+            <MenuButton icon={<HelpCircle className="text-teal-400" />} label="Trung tâm hỗ trợ" onClick={onHelpClick} />
             <MenuButton icon={<LogOut className="text-rose-500" />} label="Đăng xuất" isDanger onClick={onLogout} />
           </div>
         )}
