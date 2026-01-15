@@ -143,6 +143,16 @@ export interface Course {
   reviews: Review[];
 }
 
+export interface Certificate {
+  id: string;
+  courseName: string;
+  issueDate: string;
+  instructor: string;
+  credentialId: string;
+  image: string;
+  grade: string;
+}
+
 export interface Message {
   role: 'user' | 'model';
   text: string;
@@ -161,6 +171,16 @@ export enum AppSection {
   AI_TUTOR = 'ai_tutor',
   PROFILE = 'profile',
   EDIT_PROFILE = 'edit_profile',
+  SETTINGS = 'settings',
+  CERTIFICATES = 'certificates',
+  CERTIFICATE_DETAIL = 'certificate_detail',
+  BOOKMARKS = 'bookmarks',
+  OFFLINE_LIBRARY = 'offline_library',
+  DAILY_CHALLENGE = 'daily_challenge',
+  CHALLENGE_EXERCISE = 'challenge_exercise',
+  SUBSCRIPTION = 'subscription',
+  HELP_CENTER = 'help_center',
+  CONTACT_SUPPORT = 'contact_support',
   USER_PROFILE = 'user_profile',
   COURSE_DETAIL = 'course_detail',
   CURRICULUM = 'curriculum',

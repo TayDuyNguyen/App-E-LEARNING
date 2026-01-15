@@ -4,7 +4,7 @@ import {
   Home, MessageSquare, User, Bell, 
   Sparkles, BookMarked, BarChart3, Users 
 } from 'lucide-react';
-import { AppSection, AuthStatus, Course, Lesson, Vocabulary, Discussion, StudyGroup } from './types/index';
+import { AppSection, AuthStatus, Course, Lesson, Vocabulary, Discussion, StudyGroup, Certificate } from './types/index';
 import { MOCK_COURSES, MOCK_VOCABULARY, MOCK_EXERCISE } from './data/mockData';
 
 // Shared Components
@@ -17,8 +17,11 @@ import WelcomeScreen from './features/auth/components/WelcomeScreen';
 import LoginScreen from './features/auth/components/LoginScreen';
 import RegisterScreen from './features/auth/components/RegisterScreen';
 import ForgotPasswordScreen from './features/auth/components/ForgotPasswordScreen';
-import Profile from './features/auth/components/Profile';
+import ProfileScreen from './features/auth/components/Profile';
 import EditProfileScreen from './features/auth/components/EditProfile';
+import SettingsScreen from './features/auth/components/SettingsScreen';
+import CertificatesScreen from './features/auth/components/CertificatesScreen';
+import CertificateDetailScreen from './features/auth/components/CertificateDetailScreen';
 
 // Features - Dashboard & AI
 import Dashboard from './features/dashboard/components/Dashboard';
@@ -43,6 +46,8 @@ import FlashcardResultScreen from './features/vocabulary/components/FlashcardRes
 import ProgressScreen from './features/gamification/components/ProgressReport';
 import AchievementsScreen from './features/gamification/components/Achievements';
 import LeaderboardScreen from './features/gamification/components/Leaderboard';
+import DailyChallengeScreen from './features/gamification/components/DailyChallengeScreen';
+import ChallengeExerciseScreen from './features/gamification/components/ChallengeExerciseScreen';
 
 // Features - Community & Groups
 import DiscussionsScreen from './features/community/components/Discussions';
@@ -52,6 +57,15 @@ import StudyGroupsScreen from './features/groups/components/StudyGroups';
 import GroupDetailScreen from './features/groups/components/GroupDetail';
 import CreateGroupScreen from './features/groups/components/CreateGroup';
 
+// Features - Bookmarks, Offline & Subscription
+import BookmarksScreen from './features/bookmarks/components/BookmarksScreen';
+import OfflineLibraryScreen from './features/offline/components/OfflineLibraryScreen';
+import SubscriptionScreen from './features/subscription/components/SubscriptionScreen';
+
+// Features - Support
+import HelpCenterScreen from './features/support/components/HelpCenterScreen';
+import ContactSupportScreen from './features/support/components/ContactSupportScreen';
+
 const App: React.FC = () => {
   const [authStatus, setAuthStatus] = useState<AuthStatus>(AuthStatus.SPLASH);
   const [activeSection, setActiveSection] = useState<AppSection>(AppSection.HOME);
@@ -59,6 +73,7 @@ const App: React.FC = () => {
   const [selectedVocab, setSelectedVocab] = useState<Vocabulary | null>(null);
   const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
+  const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   const [currentScore, setCurrentScore] = useState(0);
   const [flashcardStats, setFlashcardStats] = useState({ again: 0, hard: 0, good: 0, easy: 0 });
   const [vocabularyList, setVocabularyList] = useState<Vocabulary[]>(MOCK_VOCABULARY);
@@ -72,7 +87,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (authStatus === AuthStatus.SPLASH) {
-      const timer = setTimeout(() => setAuthStatus(AuthStatus.WELCOME), 3000);
+      const timer = setTimeout(() => setAuthStatus(AuthStatus.WELCOME), 2500);
       return () => clearTimeout(timer);
     }
   }, [authStatus]);
@@ -88,13 +103,55 @@ const App: React.FC = () => {
   const renderMainContent = () => {
     switch (activeSection) {
       case AppSection.HOME: 
-        return <Dashboard onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} onOpenSearch={() => setActiveSection(AppSection.SEARCH)} onVocabClick={() => setActiveSection(AppSection.VOCABULARY)} />;
+        return <Dashboard 
+          onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} 
+          onOpenSearch={() => setActiveSection(AppSection.SEARCH)} 
+          onVocabClick={() => setActiveSection(AppSection.VOCABULARY)} 
+          onChallengeClick={() => setActiveSection(AppSection.DAILY_CHALLENGE)}
+        />;
       case AppSection.EXPLORE: 
         return <CourseLibrary onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} />;
       case AppSection.AI_TUTOR: return <AITutor />;
-      case AppSection.PROFILE: return <Profile user={userProfile} onLogout={() => setAuthStatus(AuthStatus.LOGIN)} onEditClick={() => setActiveSection(AppSection.EDIT_PROFILE)} />;
+      case AppSection.PROFILE: return (
+        <ProfileScreen 
+          user={userProfile} 
+          onLogout={() => setAuthStatus(AuthStatus.LOGIN)} 
+          onEditClick={() => setActiveSection(AppSection.EDIT_PROFILE)} 
+          onSettingsClick={() => setActiveSection(AppSection.SETTINGS)} 
+          onCertificatesClick={() => setActiveSection(AppSection.CERTIFICATES)} 
+          onBookmarksClick={() => setActiveSection(AppSection.BOOKMARKS)}
+          onOfflineClick={() => setActiveSection(AppSection.OFFLINE_LIBRARY)}
+          onSubscriptionClick={() => setActiveSection(AppSection.SUBSCRIPTION)}
+          onHelpClick={() => setActiveSection(AppSection.HELP_CENTER)}
+        />
+      );
       case AppSection.EDIT_PROFILE: return <EditProfileScreen user={userProfile} onBack={() => setActiveSection(AppSection.PROFILE)} onSave={(newData) => { setUserProfile({...userProfile, ...newData}); setActiveSection(AppSection.PROFILE); }} />;
-      case AppSection.SEARCH: return <SearchScreen onBack={() => setActiveSection(AppSection.HOME)} />;
+      case AppSection.SETTINGS: return <SettingsScreen onBack={() => setActiveSection(AppSection.PROFILE)} onLogout={() => setAuthStatus(AuthStatus.LOGIN)} />;
+      case AppSection.CERTIFICATES: return <CertificatesScreen onBack={() => setActiveSection(AppSection.PROFILE)} onCertificateClick={(cert) => { setSelectedCertificate(cert); setActiveSection(AppSection.CERTIFICATE_DETAIL); }} />;
+      case AppSection.CERTIFICATE_DETAIL: return selectedCertificate ? <CertificateDetailScreen cert={selectedCertificate} onBack={() => setActiveSection(AppSection.CERTIFICATES)} /> : null;
+      case AppSection.DAILY_CHALLENGE: return <DailyChallengeScreen onBack={() => setActiveSection(AppSection.HOME)} onStartChallenge={() => setActiveSection(AppSection.CHALLENGE_EXERCISE)} />;
+      case AppSection.CHALLENGE_EXERCISE: return <ChallengeExerciseScreen onBack={() => setActiveSection(AppSection.DAILY_CHALLENGE)} onFinish={() => setActiveSection(AppSection.DAILY_CHALLENGE)} />;
+      case AppSection.BOOKMARKS: return (
+        <BookmarksScreen 
+          onBack={() => setActiveSection(AppSection.PROFILE)} 
+          onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }}
+          onVocabClick={(v) => { setSelectedVocab(v); setActiveSection(AppSection.VOCABULARY_DETAIL); }}
+          onDiscussionClick={(d) => { setSelectedDiscussion(d); setActiveSection(AppSection.DISCUSSION_DETAIL); }}
+        />
+      );
+      case AppSection.OFFLINE_LIBRARY: return (
+        <OfflineLibraryScreen 
+          onBack={() => setActiveSection(AppSection.PROFILE)} 
+          onPlayCourse={(id) => { 
+             const course = MOCK_COURSES.find(c => c.id === id);
+             if (course) { setSelectedCourse(course); setActiveSection(AppSection.LESSON_PLAYER); }
+          }} 
+        />
+      );
+      case AppSection.SUBSCRIPTION: return <SubscriptionScreen onBack={() => setActiveSection(AppSection.PROFILE)} />;
+      case AppSection.HELP_CENTER: return <HelpCenterScreen onBack={() => setActiveSection(AppSection.PROFILE)} onContactClick={() => setActiveSection(AppSection.CONTACT_SUPPORT)} />;
+      case AppSection.CONTACT_SUPPORT: return <ContactSupportScreen onBack={() => setActiveSection(AppSection.HELP_CENTER)} />;
+      case AppSection.SEARCH: return <SearchScreen onBack={() => setActiveSection(AppSection.HOME)} onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} onDiscussionClick={(d) => { setSelectedDiscussion(d); setActiveSection(AppSection.DISCUSSION_DETAIL); }} />;
       case AppSection.NOTIFICATIONS: return <NotificationsScreen onBack={() => setActiveSection(AppSection.HOME)} />;
       case AppSection.COURSE_DETAIL: return selectedCourse ? <CourseDetailScreen course={selectedCourse} onBack={() => setActiveSection(AppSection.HOME)} onEnroll={() => setActiveSection(AppSection.CURRICULUM)} /> : null;
       case AppSection.CURRICULUM: return selectedCourse ? <CurriculumScreen course={selectedCourse} onBack={() => setActiveSection(AppSection.COURSE_DETAIL)} onLessonSelect={(l) => l.type === 'quiz' ? setActiveSection(AppSection.EXERCISE) : setActiveSection(AppSection.LESSON_PLAYER)} /> : null;
@@ -115,7 +172,7 @@ const App: React.FC = () => {
       case AppSection.STUDY_GROUPS: return <StudyGroupsScreen onBack={() => setActiveSection(AppSection.HOME)} onGroupClick={(g) => { setSelectedGroup(g); setActiveSection(AppSection.GROUP_DETAIL); }} onCreateClick={() => setActiveSection(AppSection.CREATE_GROUP)} />;
       case AppSection.GROUP_DETAIL: return selectedGroup ? <GroupDetailScreen group={selectedGroup} onBack={() => setActiveSection(AppSection.STUDY_GROUPS)} /> : null;
       case AppSection.CREATE_GROUP: return <CreateGroupScreen onBack={() => setActiveSection(AppSection.STUDY_GROUPS)} onCreate={() => setActiveSection(AppSection.STUDY_GROUPS)} />;
-      default: return <Dashboard onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} onOpenSearch={() => setActiveSection(AppSection.SEARCH)} onVocabClick={() => setActiveSection(AppSection.VOCABULARY)} />;
+      default: return <Dashboard onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} onOpenSearch={() => setActiveSection(AppSection.SEARCH)} onVocabClick={() => setActiveSection(AppSection.VOCABULARY)} onChallengeClick={() => setActiveSection(AppSection.DAILY_CHALLENGE)} />;
     }
   };
 
@@ -139,7 +196,11 @@ const App: React.FC = () => {
     AppSection.EXERCISE_RESULT, AppSection.VOCABULARY_DETAIL, AppSection.FLASHCARDS,
     AppSection.FLASHCARD_RESULT, AppSection.FLASHCARD_DECKS, AppSection.ACHIEVEMENTS,
     AppSection.LEADERBOARD, AppSection.DISCUSSION_DETAIL, AppSection.CREATE_DISCUSSION,
-    AppSection.GROUP_DETAIL, AppSection.CREATE_GROUP, AppSection.EDIT_PROFILE
+    AppSection.GROUP_DETAIL, AppSection.CREATE_GROUP, AppSection.EDIT_PROFILE,
+    AppSection.SETTINGS, AppSection.CERTIFICATES, AppSection.CERTIFICATE_DETAIL,
+    AppSection.BOOKMARKS, AppSection.OFFLINE_LIBRARY, AppSection.DAILY_CHALLENGE,
+    AppSection.CHALLENGE_EXERCISE, AppSection.SUBSCRIPTION, AppSection.HELP_CENTER,
+    AppSection.CONTACT_SUPPORT
   ].includes(activeSection);
 
   return (

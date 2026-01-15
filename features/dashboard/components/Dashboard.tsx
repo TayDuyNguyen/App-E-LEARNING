@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { 
   PlayCircle, Trophy, Clock, Flame, Zap, Search, 
   LayoutGrid, Cpu, Palette, Calculator, ChevronRight, 
-  BookOpen, Star, RefreshCcw, BookMarked 
+  BookOpen, Star, RefreshCcw, BookMarked, Sparkles 
 } from 'lucide-react';
 import { Course } from '../../../types/index';
 
@@ -11,6 +11,7 @@ interface DashboardProps {
   onCourseClick: (course: Course) => void;
   onOpenSearch: () => void;
   onVocabClick: () => void;
+  onChallengeClick: () => void;
 }
 
 const CATEGORIES = [
@@ -44,7 +45,7 @@ const DUMMY_COURSE: Course = {
   reviews: []
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ onCourseClick, onOpenSearch, onVocabClick }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onCourseClick, onOpenSearch, onVocabClick, onChallengeClick }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = () => {
@@ -64,7 +65,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onCourseClick, onOpenSearch, onVo
       <div className="p-6 space-y-8 animate-in fade-in duration-700">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-2xl font-black text-white tracking-tight">Chào Quốc Anh! 👋</h2>
+            <h2 className="text-2xl font-black text-white tracking-tight leading-none italic">Chào Quốc Anh! 👋</h2>
             <p className="text-slate-400 text-sm font-medium">Hôm nay bạn muốn học gì?</p>
           </div>
           <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-500 px-4 py-2 rounded-2xl border border-amber-500/20 active:scale-95 transition-transform cursor-pointer shadow-lg shadow-amber-900/10 flex-shrink-0">
@@ -82,22 +83,24 @@ const Dashboard: React.FC<DashboardProps> = ({ onCourseClick, onOpenSearch, onVo
           </div>
         </div>
 
+        {/* Daily Challenge Entry Widget */}
         <div 
-          onClick={onVocabClick}
-          className="bg-gradient-to-r from-indigo-600/20 to-blue-600/20 border border-indigo-500/30 p-6 rounded-[32px] flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all group"
+          onClick={onChallengeClick}
+          className="bg-gradient-to-br from-indigo-600 to-blue-600 p-6 rounded-[32px] flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all group shadow-xl shadow-blue-900/20 relative overflow-hidden"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-              <BookMarked className="w-6 h-6" />
+          <Sparkles className="absolute -right-4 -top-4 w-32 h-32 opacity-10 text-white rotate-12" />
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20">
+              <Zap className="w-7 h-7 fill-current text-amber-400" />
             </div>
             <div>
-              <h4 className="text-sm font-black text-white uppercase tracking-tight leading-none mb-1">Mỗi ngày 5 từ mới</h4>
-              <p className="text-[10px] font-bold text-slate-400">Bạn đã học được 120 từ vựng</p>
+              <h4 className="text-base font-black text-white italic tracking-tight leading-none mb-1">Thử thách hôm nay</h4>
+              <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest">+250 XP đang chờ bạn</p>
             </div>
           </div>
-          <button className="p-3 bg-white/5 rounded-2xl text-white group-hover:bg-blue-600 transition-colors">
-            <ChevronRight className="w-5 h-5" />
-          </button>
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 group-hover:translate-x-1 transition-transform">
+             <ChevronRight className="w-6 h-6" />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -126,7 +129,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onCourseClick, onOpenSearch, onVo
 
         <div className="space-y-5">
           <div className="flex items-center justify-between px-1">
-            <h3 className="font-black text-white tracking-tight text-lg">Đang tiếp tục</h3>
+            <h3 className="font-black text-white tracking-tight text-lg italic">Đang tiếp tục</h3>
             <button className="text-blue-500 text-xs font-black uppercase tracking-widest flex items-center gap-1">
               Xem hết <ChevronRight className="w-3.5 h-3.5" />
             </button>
@@ -142,7 +145,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onCourseClick, onOpenSearch, onVo
                   <PlayCircle className="w-7 h-7" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-black text-slate-100 mb-2 truncate uppercase tracking-tight">UI/UX Masterclass</h4>
+                  <h4 className="text-sm font-black text-slate-100 mb-2 truncate uppercase tracking-tight italic">{i === 1 ? 'UI/UX Masterclass' : 'React Pro patterns'}</h4>
                   <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                     <div className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)] transition-all" style={{ width: i === 1 ? '65%' : '32%' }}></div>
                   </div>
