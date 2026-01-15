@@ -1,0 +1,8 @@
+{
+  "name": "Copy of E-LEARNING",
+  "description": "A modern AI-powered learning platform that helps students master any subject through personalized tutoring, dynamic quizzes, and progress tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
