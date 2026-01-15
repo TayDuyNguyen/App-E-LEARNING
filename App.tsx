@@ -29,6 +29,7 @@ import FlashcardResultScreen from './components/FlashcardResultScreen';
 import FlashcardDecksScreen from './components/FlashcardDecksScreen';
 import ProgressScreen from './components/ProgressScreen';
 import AchievementsScreen from './components/AchievementsScreen';
+import LeaderboardScreen from './components/LeaderboardScreen';
 
 import SplashScreen from './components/auth/SplashScreen';
 import WelcomeScreen from './components/auth/WelcomeScreen';
@@ -59,7 +60,7 @@ const App: React.FC = () => {
       category: 'UI/UX Design', difficulty: 'hard', isBookmarked: false, isLearned: true
     },
     { 
-      id: 'v3', word: 'Constraint', phonetic: '/kənˈstreɪnt/', 
+      id: 'v3', word: 'Constraint', phonetic: '/kən\'streɪnt/', 
       definition: 'Sự hạn chế hoặc ràng buộc trong thiết kế.',
       example: 'Designing for smartwatches involves strict screen space constraints.',
       category: 'UI/UX Design', difficulty: 'easy', isBookmarked: false, isLearned: false
@@ -152,9 +153,11 @@ const App: React.FC = () => {
       case AppSection.FLASHCARD_RESULT:
         return <FlashcardResultScreen stats={flashcardStats} onRetry={() => setActiveSection(AppSection.FLASHCARDS)} onGoHome={() => setActiveSection(AppSection.HOME)} />;
       case AppSection.PROGRESS:
-        return <ProgressScreen onCourseClick={() => setActiveSection(AppSection.CURRICULUM)} onAchievementsClick={() => setActiveSection(AppSection.ACHIEVEMENTS)} onLeaderboardClick={() => console.log('Leaderboard')} />;
+        return <ProgressScreen onCourseClick={() => setActiveSection(AppSection.CURRICULUM)} onAchievementsClick={() => setActiveSection(AppSection.ACHIEVEMENTS)} onLeaderboardClick={() => setActiveSection(AppSection.LEADERBOARD)} />;
       case AppSection.ACHIEVEMENTS:
         return <AchievementsScreen onBack={() => setActiveSection(AppSection.PROGRESS)} />;
+      case AppSection.LEADERBOARD:
+        return <LeaderboardScreen onBack={() => setActiveSection(AppSection.PROGRESS)} onUserClick={(name) => console.log('User profile:', name)} />;
       default: return <Dashboard onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} onOpenSearch={() => setActiveSection(AppSection.SEARCH)} onVocabClick={() => setActiveSection(AppSection.VOCABULARY)} />;
     }
   };
@@ -185,7 +188,8 @@ const App: React.FC = () => {
     AppSection.FLASHCARDS,
     AppSection.FLASHCARD_RESULT,
     AppSection.FLASHCARD_DECKS,
-    AppSection.ACHIEVEMENTS
+    AppSection.ACHIEVEMENTS,
+    AppSection.LEADERBOARD
   ];
   const showNav = !hideNavSections.includes(activeSection);
 
