@@ -70,6 +70,54 @@ export interface Review {
   date: string;
 }
 
+export interface Comment {
+  id: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  content: string;
+  date: string;
+  likes: number;
+  upvotes: number;
+  downvotes: number;
+  userVote?: number; // 1 for up, -1 for down
+  isSolution?: boolean;
+  replies?: Comment[];
+}
+
+export interface Discussion {
+  id: string;
+  title: string;
+  content: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  category: string;
+  repliesCount: number;
+  likesCount: number;
+  date: string;
+  isPinned?: boolean;
+  isTrending?: boolean;
+  isSolved?: boolean;
+  comments?: Comment[];
+}
+
+export interface StudyGroup {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  memberCount: number;
+  avatar: string;
+  isJoined: boolean;
+  goal: string;
+  recentActivity?: string;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -112,6 +160,7 @@ export enum AppSection {
   EXPLORE = 'explore',
   AI_TUTOR = 'ai_tutor',
   PROFILE = 'profile',
+  USER_PROFILE = 'user_profile',
   COURSE_DETAIL = 'course_detail',
   CURRICULUM = 'curriculum',
   LESSON_PLAYER = 'lesson_player',
@@ -126,7 +175,13 @@ export enum AppSection {
   FLASHCARD_DECKS = 'flashcard_decks',
   PROGRESS = 'progress',
   ACHIEVEMENTS = 'achievements',
-  LEADERBOARD = 'leaderboard'
+  LEADERBOARD = 'leaderboard',
+  DISCUSSIONS = 'discussions',
+  DISCUSSION_DETAIL = 'discussion_detail',
+  CREATE_DISCUSSION = 'create_discussion',
+  STUDY_GROUPS = 'study_groups',
+  GROUP_DETAIL = 'group_detail',
+  CREATE_GROUP = 'create_group'
 }
 
 export enum AuthStatus {

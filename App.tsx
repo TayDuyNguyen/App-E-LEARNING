@@ -8,9 +8,10 @@ import {
   Bell, 
   Sparkles,
   BookMarked,
-  BarChart3
+  BarChart3,
+  Users
 } from 'lucide-react';
-import { AppSection, AuthStatus, Course, Lesson, Exercise, Vocabulary } from './types';
+import { AppSection, AuthStatus, Course, Lesson, Exercise, Vocabulary, Discussion, StudyGroup } from './types';
 import Dashboard from './components/Dashboard';
 import CourseLibrary from './components/CourseLibrary';
 import AITutor from './components/AITutor';
@@ -30,6 +31,12 @@ import FlashcardDecksScreen from './components/FlashcardDecksScreen';
 import ProgressScreen from './components/ProgressScreen';
 import AchievementsScreen from './components/AchievementsScreen';
 import LeaderboardScreen from './components/LeaderboardScreen';
+import DiscussionsScreen from './components/DiscussionsScreen';
+import DiscussionDetailScreen from './components/DiscussionDetailScreen';
+import CreateDiscussionScreen from './components/CreateDiscussionScreen';
+import StudyGroupsScreen from './components/StudyGroupsScreen';
+import GroupDetailScreen from './components/GroupDetailScreen';
+import CreateGroupScreen from './components/CreateGroupScreen';
 
 import SplashScreen from './components/auth/SplashScreen';
 import WelcomeScreen from './components/auth/WelcomeScreen';
@@ -42,6 +49,8 @@ const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<AppSection>(AppSection.HOME);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedVocab, setSelectedVocab] = useState<Vocabulary | null>(null);
+  const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
   const [currentScore, setCurrentScore] = useState(0);
   const [flashcardStats, setFlashcardStats] = useState({ again: 0, hard: 0, good: 0, easy: 0 });
   const [userAnswers, setUserAnswers] = useState<Record<string, any>>({});
@@ -158,6 +167,18 @@ const App: React.FC = () => {
         return <AchievementsScreen onBack={() => setActiveSection(AppSection.PROGRESS)} />;
       case AppSection.LEADERBOARD:
         return <LeaderboardScreen onBack={() => setActiveSection(AppSection.PROGRESS)} onUserClick={(name) => console.log('User profile:', name)} />;
+      case AppSection.DISCUSSIONS:
+        return <DiscussionsScreen onBack={() => setActiveSection(AppSection.HOME)} onDiscussionClick={(d) => { setSelectedDiscussion(d); setActiveSection(AppSection.DISCUSSION_DETAIL); }} onCreateClick={() => setActiveSection(AppSection.CREATE_DISCUSSION)} />;
+      case AppSection.DISCUSSION_DETAIL:
+        return selectedDiscussion ? <DiscussionDetailScreen discussion={selectedDiscussion} onBack={() => setActiveSection(AppSection.DISCUSSIONS)} onAuthorClick={(id) => console.log('Navigate to user:', id)} /> : null;
+      case AppSection.CREATE_DISCUSSION:
+        return <CreateDiscussionScreen onBack={() => setActiveSection(AppSection.DISCUSSIONS)} onPost={(data) => { console.log('Posted:', data); setActiveSection(AppSection.DISCUSSIONS); }} />;
+      case AppSection.STUDY_GROUPS:
+        return <StudyGroupsScreen onBack={() => setActiveSection(AppSection.HOME)} onGroupClick={(g) => { setSelectedGroup(g); setActiveSection(AppSection.GROUP_DETAIL); }} onCreateClick={() => setActiveSection(AppSection.CREATE_GROUP)} />;
+      case AppSection.GROUP_DETAIL:
+        return selectedGroup ? <GroupDetailScreen group={selectedGroup} onBack={() => setActiveSection(AppSection.STUDY_GROUPS)} /> : null;
+      case AppSection.CREATE_GROUP:
+        return <CreateGroupScreen onBack={() => setActiveSection(AppSection.STUDY_GROUPS)} onCreate={(data) => { console.log('Group Created:', data); setActiveSection(AppSection.STUDY_GROUPS); }} />;
       default: return <Dashboard onCourseClick={(c) => { setSelectedCourse(c); setActiveSection(AppSection.COURSE_DETAIL); }} onOpenSearch={() => setActiveSection(AppSection.SEARCH)} onVocabClick={() => setActiveSection(AppSection.VOCABULARY)} />;
     }
   };
@@ -189,7 +210,11 @@ const App: React.FC = () => {
     AppSection.FLASHCARD_RESULT,
     AppSection.FLASHCARD_DECKS,
     AppSection.ACHIEVEMENTS,
-    AppSection.LEADERBOARD
+    AppSection.LEADERBOARD,
+    AppSection.DISCUSSION_DETAIL,
+    AppSection.CREATE_DISCUSSION,
+    AppSection.GROUP_DETAIL,
+    AppSection.CREATE_GROUP
   ];
   const showNav = !hideNavSections.includes(activeSection);
 
@@ -222,9 +247,9 @@ const App: React.FC = () => {
           <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[440px] px-6 z-50">
             <div className="bg-[#1E293B]/90 backdrop-blur-2xl rounded-[32px] px-2 py-2 shadow-2xl flex justify-around items-center border border-white/10">
               <NavItem icon={<Home />} label="Trang chủ" active={activeSection === AppSection.HOME} onClick={() => setActiveSection(AppSection.HOME)} />
+              <NavItem icon={<Users />} label="Nhóm học" active={activeSection === AppSection.STUDY_GROUPS} onClick={() => setActiveSection(AppSection.STUDY_GROUPS)} />
+              <NavItem icon={<MessageSquare />} label="Diễn đàn" active={activeSection === AppSection.DISCUSSIONS} onClick={() => setActiveSection(AppSection.DISCUSSIONS)} />
               <NavItem icon={<BarChart3 />} label="Tiến độ" active={activeSection === AppSection.PROGRESS} onClick={() => setActiveSection(AppSection.PROGRESS)} />
-              <NavItem icon={<BookMarked />} label="Từ vựng" active={activeSection === AppSection.VOCABULARY} onClick={() => setActiveSection(AppSection.VOCABULARY)} />
-              <NavItem icon={<MessageSquare />} label="AI Gia sư" active={activeSection === AppSection.AI_TUTOR} onClick={() => setActiveSection(AppSection.AI_TUTOR)} />
               <NavItem icon={<User />} label="Hồ sơ" active={activeSection === AppSection.PROFILE} onClick={() => setActiveSection(AppSection.PROFILE)} />
             </div>
           </nav>
