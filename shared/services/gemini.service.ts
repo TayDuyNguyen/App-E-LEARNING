@@ -1,14 +1,28 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let aiInstance: any = null;
+
+const getAI = () => {
+  if (aiInstance) return aiInstance;
+  const apiKey = (process.env.API_KEY || "").trim();
+  if (!apiKey) {
+    console.warn("Gemini API Key is missing. AI features will be disabled.");
+    return null;
+  }
+  aiInstance = new GoogleGenAI({ apiKey });
+  return aiInstance;
+};
 
 export const getTutorResponse = async (history: { role: string; text: string }[], userMessage: string) => {
+  const ai = getAI();
+  if (!ai) return "AI setup incomplete. Please check your API key.";
+
   const model = 'gemini-3-pro-preview';
   const contents = [
-    ...history.map(h => ({ 
-      role: h.role === 'model' ? 'model' : 'user', 
-      parts: [{ text: h.text }] 
+    ...history.map(h => ({
+      role: h.role === 'model' ? 'model' : 'user',
+      parts: [{ text: h.text }]
     })),
     { role: 'user', parts: [{ text: userMessage }] }
   ];
@@ -30,6 +44,9 @@ export const getTutorResponse = async (history: { role: string; text: string }[]
 };
 
 export const generateQuiz = async (topic: string) => {
+  const ai = getAI();
+  if (!ai) return null;
+
   const model = 'gemini-3-flash-preview';
   try {
     const response = await ai.models.generateContent({
